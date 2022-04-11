@@ -1,73 +1,113 @@
-#include <stdio.h>
-#include <stdlib.h>
+/*
+   Copyright (c) 2019, The LineageOS Project
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are
+   met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the name of The Linux Foundation nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+   THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+   WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+   BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+   BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+   WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+   OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-#include <android-base/logging.h>
-#include <android-base/properties.h>
+#include <stdlib.h>
 
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
+#include <android-base/file.h>
+#include <android-base/properties.h>
+#include <android-base/logging.h>
 
-#include "property_service.h"
 #include "vendor_init.h"
 
-#include "init_sec.h"
+using ::android::base::GetProperty;
+using ::android::base::SetProperty;
 
-#define MODEL_NAME_LEN 5  // e.g. "A520F"
-#define BUILD_NAME_LEN 8  // e.g. "XXU2BQH4"
-#define CODENAME_LEN   11 // e.g. "a5y17ltecan"
-
-
-static void property_override(char const prop[], char const value[]) {
-    prop_info *pi;
-
-    pi = (prop_info*) __system_property_find(prop);
-    if (pi)
-        __system_property_update(pi, value, strlen(value));
-    else
-        __system_property_add(prop, strlen(prop), value, strlen(value));
+void property_override(const std::string& name, const std::string& value)
+{
+    size_t valuelen = value.size();
+    prop_info* pi = (prop_info*) __system_property_find(name.c_str());
+    if (pi != nullptr) {
+        __system_property_update(pi, value.c_str(), valuelen);
+    }
+    else {
+        int rc = __system_property_add(name.c_str(), name.size(), value.c_str(), valuelen);
+        if (rc < 0) {
+            LOG(ERROR) << "property_set(\"" << name << "\", \"" << value << "\") failed: "
+                       << "__system_property_add failed";
+        }
+    }
 }
 
-void property_override_dual(char const system_prop[], char const vendor_prop[], char const value[])
+void property_override_dual(char const system_prop[], char const vendor_prop[],
+    char const value[])
 {
     property_override(system_prop, value);
     property_override(vendor_prop, value);
 }
 
+void property_override_quad(const std::string& boot_prop, const std::string& product_prop, const std::string& system_prop, const std::string& vendor_prop, const std::string& value)
+{
+    property_override(boot_prop, value);
+    property_override(product_prop, value);
+    property_override(system_prop, value);
+    property_override(vendor_prop, value);
+}
+
+void init_dsds() {
+    SetProperty("ro.multisim.set_audio_params", "true");
+    SetProperty("ro.multisim.simslotcount", "2");
+    SetProperty("persist.radio.multisim.config", "dsds");
+}
+
 void vendor_load_properties()
 {
-    const std::string bootloader = android::base::GetProperty("ro.bootloader", "");
-    const std::string bl_model = bootloader.substr(0, MODEL_NAME_LEN);
-    const std::string bl_build = bootloader.substr(MODEL_NAME_LEN);
+    // Init a dummy BT MAC address, will be overwritten later
+    SetProperty("ro.boot.btmacaddr", "00:00:00:00:00:00");
 
-    std::string model;  // A520F
-    std::string device; // a5y17lte
-    std::string name;    // a5y17ltexx
+    std::string bootloader = GetProperty("ro.bootloader","");
 
-    model = "SM-" + bl_model;
+    if (bootloader.find("A320FL") == 0) {
+    /* SM-A320FL */
+        property_override_quad("ro.product.model", "ro.product.odm.model", "ro.product.system.model", "ro.product.vendor.model", "SM-A320FL");
+        property_override_quad("ro.product.name", "ro.product.odm.name", "ro.product.system.name", "ro.product.vendor.name", "a3y17ltexc");
 
-    for (size_t i = 0; i < VARIANT_MAX; i++) {
-        std::string model_ = all_variants[i]->model;
-        if (model.compare(model_) == 0) {
-            device = all_variants[i]->codename;
-            break;
-        }
+    } else if (bootloader.find("A320FX") == 0) {
+    /* SM-A320FX */
+        property_override_quad("ro.product.model", "ro.product.odm.model", "ro.product.system.model", "ro.product.vendor.model", "SM-A320F");
+        property_override_quad("ro.product.name", "ro.product.odm.name", "ro.product.system.name", "ro.product.vendor.name", "a3y17ltexx");
+
+        init_dsds();
+
+    } else if (bootloader.find("A320Y") == 0) {
+    /* SM-A320Y */
+        property_override_quad("ro.product.model", "ro.product.odm.model", "ro.product.system.model", "ro.product.vendor.model", "SM-A320Y");
+        property_override_quad("ro.product.name", "ro.product.odm.name", "ro.product.system.name", "ro.product.vendor.name", "a3y17ltedx");
+
+        init_dsds();
     }
 
-    if (device.size() == 0) {
-        LOG(ERROR) << "Could not detect device, forcing a5y17lte";
-        device = "a5y17lte";
-    }
+    /* Common properties*/
+    property_override_dual("ro.build.fingerprint", "ro.vendor.build.fingerprint", "google/redfin/redfin:11/RQ2A.210405.005/7181113:user/release-keys");
+    property_override("ro.build.description", "samsung/a3y17ltexc/a3y17lte:8.0.0/R16NW/A320FLXXS5CSL5:user/release-keys");
+    property_override_quad("ro.product.device", "ro.product.odm.device", "ro.product.system.device", "ro.product.vendor.device", "a3y17lte");
 
-    name = device + "xx";
-
-    LOG(INFO) << "Found bootloader: %s", bootloader.c_str();
-    LOG(INFO) << "Setting ro.product.model: %s", model.c_str();
-    LOG(INFO) << "Setting ro.product.device: %s", device.c_str();
-    LOG(INFO) << "Setting ro.product.name: %s", name.c_str();
-    LOG(INFO) << "Setting ro.build.product: %s", device.c_str();
-
-    property_override_dual("ro.product.model", "ro.vendor.product.model", model.c_str());
-    property_override_dual("ro.product.device", "ro.vendor.product.device", device.c_str());
-    property_override_dual("ro.product.name", "ro.vendor.product.name", name.c_str());
-    property_override("ro.build.product", device.c_str());
+    std::string device = GetProperty("ro.product.device", "");
+    LOG(ERROR) << "Found bootloader id %s setting build properties for %s device\n" << bootloader.c_str() << device.c_str();
 }
+

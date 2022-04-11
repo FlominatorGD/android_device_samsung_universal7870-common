@@ -19,9 +19,8 @@ on post-fs
 on property:sys.mobicoredaemon.enable=true
     write /proc/iccc_ready 1
 
-# MobiCore startup
-service mobicore /vendor/bin/mcDriverDaemon -r /vendor/app/mcRegistry/FFFFFFFF000000000000000000000001.drbin -r /vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin -r /vendor/app/mcRegistry/ffffffffd00000000000000000000016.tlbin -r /vendor/app/mcRegistry/ffffffffd0000000000000000000001c.tlbin -r /vendor/app/mcRegistry/ffffffffd00000000000000000000045.drbin
-    class core
+# MobiCore startup 7870
+service mobicore /system/bin/mcDriverDaemon -r /system/app/020a0000000000000000000000000000.drbin -r /system/app/mcRegistry/FFFFFFFFD00000000000000000000016.tlbin
     user system
     group system
     disabled

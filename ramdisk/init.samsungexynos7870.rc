@@ -1,4 +1,4 @@
-import /vendor/etc/init/hw/init.samsungexynos7880.usb.rc
+import /vendor/etc/init/hw/init.samsungexynos7870.usb.rc
 import /vendor/etc/init/hw/init.baseband.rc
 import /vendor/etc/init/hw/init.samsung.rc
 
@@ -520,8 +520,8 @@ on boot
 
 on fs
     write /sys/class/scsi_disk/0:0:0:0/cache_type "none"
-    mount_all /vendor/etc/fstab.samsungexynos7880
-    swapon_all /vendor/etc/fstab.samsungexynos7880
+    mount_all /vendor/etc/fstab.samsungexynos7870
+    swapon_all /vendor/etc/fstab.samsungexynos7870
     setprop ro.crypto.fuse_sdcard true
     chown radio system /efs
 

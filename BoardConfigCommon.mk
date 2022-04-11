@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-COMMON_PATH := device/samsung/universal7880-common
+COMMON_PATH := device/samsung/universal7870-common
 
 BUILD_BROKEN_DUP_RULES := true
 
@@ -28,8 +28,8 @@ TARGET_NO_RADIOIMAGE := true
 # Platform
 TARGET_BOARD_PLATFORM := exynos5
 TARGET_SLSI_VARIANT := bsp
-TARGET_SOC := exynos7880
-TARGET_BOOTLOADER_BOARD_NAME := universal7880
+TARGET_SOC := exynos7870
+TARGET_BOOTLOADER_BOARD_NAME := universal7870
 BOARD_VENDOR := samsung
 
 # CPU
@@ -46,7 +46,12 @@ TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
 # Audio
+USE_XML_AUDIO_POLICY_CONF := 1
 AUDIOSERVER_MULTILIB := 32
+BOARD_USE_TFA_AMP := true
+
+#bluetooth
+#BOARD_HAVE_BLUETOOTH_QCOM_SAMSUNG := true
 
 # Extracted with libbootimg
 BOARD_CUSTOM_BOOTIMG_MK := hardware/samsung/mkbootimg.mk
@@ -58,25 +63,29 @@ BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_SEPARATED_DT := true
 TARGET_CUSTOM_DTBTOOL := dtbhtoolExynos
 
+TARGET_KERNEL_ADDITIONAL_FLAGS := \
+    HOSTCFLAGS="-fuse-ld=lld -Wno-unused-command-line-argument"
+
 # Kernel
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_LINUX_KERNEL_VERSION := 3.18
 
 # Kernel config
-TARGET_KERNEL_SOURCE := kernel/samsung/universal7880
+TARGET_KERNEL_SOURCE := kernel/samsung/exynos7870
 
 # Manifest
 DEVICE_MANIFEST_FILE := $(COMMON_PATH)/manifest.xml
 PRODUCT_ENFORCE_VINTF_MANIFEST_OVERRIDE := true
+DEVICE_MATRIX_FILE := $(COMMON_PATH)/compatibility_matrix.xml
 
 # Partitions
-BOARD_BOOTIMAGE_PARTITION_SIZE     := 33554432
+BOARD_BOOTIMAGE_PARTITION_SIZE := 33554432
+BOARD_CACHEIMAGE_PARTITION_SIZE := 209715200
+BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 39845888
-BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 4504682496
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 25656557568
-BOARD_CACHEIMAGE_PARTITION_SIZE    := 209715200
-BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE  := ext4
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2871279104
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 54618209280
 
 # blockdev --getbsz /dev/block/mmcblk0p9
 BOARD_FLASH_BLOCK_SIZE := 4096
@@ -106,12 +115,19 @@ TARGET_POWERHAL_VARIANT := samsung
 
 # Graphics
 USE_OPENGL_RENDERER := true
+BOARD_USES_EXYNOS7870_GRALLOC := true
+
+TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
+MAX_VIRTUAL_DISPLAY_DIMENSION := 2048
+
+# Mobicore
+BOARD_USES_EXYNOS7870_MOBICORE := true
 
 # VR Front buffer
 #BOARD_USES_VR_FRONT_BUFFER := true
 
 # Samsung OpenMAX Video
-BOARD_USE_STOREMETADATA := true
+BOARD_USE_STOREMETADATA := false
 BOARD_USE_METADATABUFFERTYPE := true
 BOARD_USE_DMA_BUF := true
 BOARD_USE_ANB_OUTBUF_SHARE := true
@@ -127,7 +143,7 @@ BOARD_USE_VP8ENC_SUPPORT := true
 BOARD_USE_HEVCDEC_SUPPORT := true
 BOARD_USE_HEVCENC_SUPPORT := true
 BOARD_USE_HEVC_HWIP := false
-BOARD_USE_VP9DEC_SUPPORT := true
+BOARD_USE_VP9DEC_SUPPORT := false
 BOARD_USE_VP9ENC_SUPPORT := false
 BOARD_USE_CUSTOM_COMPONENT_SUPPORT := true
 BOARD_USE_VIDEO_EXT_FOR_WFD_HDCP := true
@@ -182,10 +198,6 @@ WIFI_AVOID_IFACE_RESET_MAC_CHANGE := true
 # Wifi loader
 BOARD_HAVE_SAMSUNG_WIFI := true
 
-# Build fingerprint
-BUILD_FINGERPRINT := "samsung/a7y17lteskt/a7y17lteskt:9/PPR1.180610.011/A720SKSU5CUJ2:user/release-keys"
-PRIVATE_BUILD_DESC := "a7y17lteskt-user 9 PPR1.180610.011 A720SKSU5CUJ2 release-keys"
-
 # Charger
 BOARD_CHARGING_MODE_BOOTING_LPM := /sys/class/power_supply/battery/batt_lp_charging
 BOARD_CHARGER_SHOW_PERCENTAGE := true
@@ -195,7 +207,7 @@ CHARGING_ENABLED_PATH := /sys/class/power_supply/battery/batt_lp_charging
 TARGET_TAP_TO_WAKE_NODE := /sys/class/sec/tsp/dt2w_enable
 
 # RIL
-BOARD_MODEM_TYPE := ss333
+BOARD_MODEM_TYPE := tss310
 BOARD_PROVIDES_LIBRIL := true
 ENABLE_VENDOR_RIL_SERVICE := true
 TARGET_USES_VND_SECRIL := true
@@ -209,7 +221,7 @@ VENDOR_SECURITY_PATCH := 2021-10-01
 # Recovery
 #RECOVERY_VARIANT := twrp
 BOARD_HAS_DOWNLOAD_MODE := true
-TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/ramdisk/fstab.samsungexynos7880
+TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/ramdisk/fstab.samsungexynos7870
 
 # TWRP
 ifeq ($(RECOVERY_VARIANT),twrp)
@@ -236,6 +248,7 @@ BOARD_SECCOMP_POLICY += $(COMMON_PATH)/seccomp
 
 # SELinux
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
+SELINUX_IGNORE_NEVERALLOWS := true
 
 # Shims
 TARGET_LD_SHIM_LIBS := \
@@ -244,7 +257,8 @@ TARGET_LD_SHIM_LIBS := \
     /system/lib/libcamera_client.so|libcamera_client_shim.so \
     /system/lib64/libcamera_client.so|libcamera_client_shim.so \
     /system/lib/libexynoscamera.so|libexynoscamera_shim.so \
-    /system/lib64/libexynoscamera.so|libexynoscamera_shim.so
+    /system/lib64/libexynoscamera.so|libexynoscamera_shim.so \
+		/vendor/bin/hw/gpsd|libshim_gpsd.so
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(COMMON_PATH)

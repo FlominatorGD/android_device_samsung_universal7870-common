@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := device/samsung/universal7880-common
+LOCAL_PATH := device/samsung/universal7870-common
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
@@ -24,19 +24,19 @@ PRODUCT_HOST_PACKAGES += \
 
 # Ramdisk
 PRODUCT_PACKAGES += \
-    fstab.samsungexynos7880 \
+    fstab.samsungexynos7870 \
     init.baseband.rc \
     init.vendor.rilchip.rc \
     init.vendor.rilcommon.rc \
     init.samsung.rc \
-    init.samsungexynos7880.rc \
-    init.samsungexynos7880.usb.rc \
-    init.recovery.samsungexynos7880.rc \
+    init.samsungexynos7870.rc \
+    init.samsungexynos7870.usb.rc \
+    init.recovery.samsungexynos7870.rc \
     init.gps.rc \
     mobicore.rc \
     wifi_sec.rc \
     wifi_qcom.rc \
-    ueventd.samsungexynos7880.rc
+    ueventd.samsungexynos7870.rc
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -81,20 +81,47 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 # A list of dpis to select prebuilt apk, in precedence order.
 PRODUCT_AAPT_PREBUILT_DPI := xxhdpi xhdpi hdpi
 
+# BSP
 PRODUCT_PACKAGES += \
-    android.hardware.graphics.allocator@2.0-impl \
-    android.hardware.graphics.allocator@2.0-service \
-    android.hardware.graphics.composer@2.1-service \
-    android.hardware.graphics.mapper@2.0-impl \
-    android.hardware.memtrack@1.0-impl \
-    android.hardware.renderscript@1.0-impl \
-    memtrack.exynos5 \
     hwcomposer.exynos5 \
-    libhwc2on1adapter
+    gralloc.exynos5 \
+    memtrack.exynos5 \
+    libcsc \
+    libexynosdisplay \
+    libexynosgscaler \
+    libExynosHWCService \
+    libexynosscaler \
+    libexynosutils \
+    libexynosv4l2 \
+    libfimg \
+    libhdmi \
+    libhwcutils \
+    libhwjpeg \
+    libion_exynos \
+    libmpp \
+    libstagefrighthw
 
+
+# OSS lisecnativefeature
 PRODUCT_PACKAGES += \
-    libion \
-    libfimg
+libsecnativefeature
+
+# Graphics
+PRODUCT_PACKAGES += \
+		android.hardware.graphics.allocator@2.0-impl \
+		android.hardware.graphics.allocator@2.0-service \
+		android.hardware.graphics.composer@2.1-service \
+		android.hardware.graphics.mapper@2.0-impl \
+    android.hardware.memtrack@1.0-impl \
+    android.hardware.memtrack@1.0-service \
+    android.hardware.renderscript@1.0-impl \
+    libhwc2on1adapter \
+    libion
+
+# libxml2
+PRODUCT_PACKAGES += \
+    libxml2
+
 
 # Configstore
 PRODUCT_PACKAGES += \
@@ -108,32 +135,22 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
-    camera.device@1.0-impl \
-    camera.device@3.2-impl \
-    camera.device@3.3-impl \
-    camera.device@3.4-impl \
-    libexynoscamera_shim \
-    libcamera_client_shim
-
-# Camera service
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/vendor.samsung.hardware.camera.provider@2.4-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/vendor.samsung.hardware.camera.provider@2.4-service.rc
+		android.hardware.camera.provider@2.4-impl \
+    android.hardware.camera.provider@2.4-service \
+    camera.universal7870 \
+		libexynoscamera_shim \
+		libcamera_client_shim
 
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
-    android.hardware.drm@1.3-service.clearkey \
-    libfwdlockengine \
-    libdrmclearkeyplugin
+    android.hardware.drm@1.3-service.clearkey
 
-# DRM (Widevine) service
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/android.hardware.drm@1.1-service.widevine.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.drm@1.1-service.widevine.rc
-
+# Havoc OS does not support lineage fastchage hal: removed from sepolicy too
 # FastCharge
-PRODUCT_PACKAGES += \
-    vendor.lineage.fastcharge@1.0-service.samsung
+# PRODUCT_PACKAGES += \
+#    vendor.lineage.fastcharge@1.0-service.samsung
 
 # Gatekeeper
 PRODUCT_PACKAGES += \
@@ -191,9 +208,6 @@ PRODUCT_PACKAGES += \
     android.hardware.bluetooth@1.0 \
     android.hardware.bluetooth.a2dp@1.0
 
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/init/android.hardware.bluetooth@1.0-service-qti.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.bluetooth@1.0-service-qti.rc
-
 # NFC
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/nfc/libnfc-sec-vendor.conf:$(TARGET_COPY_OUT_VENDOR)/etc/libnfc-sec-vendor.conf \
@@ -208,33 +222,36 @@ PRODUCT_PACKAGES += \
     NfcNci \
     Tag
 
-# Audio
+# Audio configuration
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio/mixer_gains.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_gains.xml \
-    $(LOCAL_PATH)/configs/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
-    $(LOCAL_PATH)/configs/audio/mixer_paths_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_0.xml \
+    $(LOCAL_PATH)/configs/audio/audio_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy.conf \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
+    $(LOCAL_PATH)/configs/audio/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
+    frameworks/av/services/audiopolicy/config/a2dp_in_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration.xml \
+    frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
-    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml
 
+# Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio.service \
-    android.hardware.audio@6.0-impl \
-    android.hardware.audio.effect@6.0-impl \
-    android.hardware.audio.common-util \
-    android.hardware.audio.common@2.0-util \
-    android.hardware.audio.common@2.0 \
-    android.hardware.audio.common@6.0-util \
-    android.hardware.audio.common@6.0 \
-    audio_amplifier.universal7880_32 \
-    audio.primary.universal7880_32 \
+    android.hardware.audio@2.0-service \
+    android.hardware.audio@5.0-impl \
+    android.hardware.audio.effect@5.0-impl \
+		android.hardware.bluetooth.audio@2.0-impl \
+    android.hardware.soundtrigger@2.2-impl \
+		audio.bluetooth.default \
+		audio.primary.universal7870 \
+		tinymix \
     audio.a2dp.default \
     audio.usb.default \
     audio.r_submix.default \
     libtinycompress
+
+#gps
+PRODUCT_PACKAGES += \
+		libshim_gpsd
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -244,14 +261,17 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
     $(LOCAL_PATH)/configs/media/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml
 
+# media
+PRODUCT_PACKAGES += \
+    android.hardware.media.c2@1.0
+
 # GPS
 PRODUCT_PACKAGES += \
-    android.hardware.gnss@1.0-impl \
-    android.hardware.gnss@1.0-service
+    android.hardware.gnss@1.0-impl
 
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/gps/gps.cfg:$(TARGET_COPY_OUT_VENDOR)/etc/gnss/gps.cfg \
-    $(LOCAL_PATH)/configs/gps/gps_debug.conf:system/etc/gps_debug.conf \
+    $(LOCAL_PATH)/configs/gps/gps.conf:system/etc/gps.conf \
+    $(LOCAL_PATH)/configs/gps/gps.xml:system/etc/gps.xml
 
 # Keys
 PRODUCT_COPY_FILES += \
@@ -275,7 +295,7 @@ PRODUCT_PACKAGES += \
 
 # Fingerprint
 PRODUCT_PACKAGES += \
-    android.hardware.biometrics.fingerprint@2.1-service.samsung \
+    android.hardware.biometrics.fingerprint@2.3-service.samsung \
     libbauthtzcommon_shim
 
 # FlipFlap
@@ -283,12 +303,12 @@ PRODUCT_PACKAGES += \
     FlipFlap
 
 # Touch features
-PRODUCT_PACKAGES += \
-    vendor.lineage.touch@1.0-service.samsung
+# PRODUCT_PACKAGES += \
+#    vendor.lineage.touch@1.0-service.samsung
 
 # Livedisplay
 PRODUCT_PACKAGES += \
-    vendor.lineage.livedisplay@2.1-service.universal7880
+    vendor.lineage.livedisplay@2.1-service.universal7870
 
 # Trust HAL
 PRODUCT_PACKAGES += \
@@ -300,6 +320,10 @@ PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-service \
     android.frameworks.sensorservice@1.0 \
     libsensorndkbridge
+
+# Offline charging
+PRODUCT_PACKAGES += \
+    charger_res_images
 
 # Vibrator
 PRODUCT_PACKAGES += \
@@ -324,15 +348,15 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
     android.hidl.manager@1.0 \
-    libhidltransport \
-    libhwbinder
+    libhidltransport.vendor \
+    libhwbinder.vendor
 
 # System.prop
-TARGET_SYSTEM_PROP += device/samsung/universal7880-common/system.prop
+-include $(DEVICE_PATH)/system_prop.mk
 
 # call Samsung LSI board support package
 $(call inherit-product, hardware/samsung_slsi/exynos5/exynos5.mk)
-$(call inherit-product, hardware/samsung_slsi/exynos7880/exynos7880.mk)
+$(call inherit-product, hardware/samsung_slsi/exynos7870/exynos7870.mk)
 
 # call the proprietary setup
-$(call inherit-product, vendor/samsung/universal7880-common/universal7880-common-vendor.mk)
+$(call inherit-product, vendor/samsung/a3y17lte/a3y17lte-vendor.mk)

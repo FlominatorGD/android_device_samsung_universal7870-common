@@ -52,3 +52,10 @@ unix_socket_connect(init, property, rild)
 allow init socket_device:sock_file { unlink create setattr };
 
 allow init tee_device:chr_file { read write open ioctl getattr };
+
+allow init hal_drm_hwservice:hwservice_manager find;
+allow init hwservicemanager:binder call;
+allow init sysfs:dir create;
+allow init system_file:file execute_no_trans;
+allow init vendor_file:file execute_no_trans;
+

@@ -45,7 +45,7 @@ Return<bool> SunlightEnhancement::isEnabled() {
 }
 
 Return<bool> SunlightEnhancement::setEnabled(bool enabled) {
-    /* see drivers/video/fbdev/exynos/decon_7880/panels/mdnie_lite_table*, get_hbm_index */
+    /* see drivers/video/fbdev/exynos/decon_7870/panels/mdnie_lite_table*, get_hbm_index */
     return WriteStringToFile(enabled ? "40000" : "0", kLUXPath, true);
 }
 
