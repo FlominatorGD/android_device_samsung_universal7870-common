@@ -5,4 +5,11 @@ allow crash_dump bluetooth_data_file:file read;
 allow crash_dump device_config_runtime_native_boot_prop:file open;
 allow crash_dump device_config_runtime_native_prop:file open;
 allow crash_dump resourcecache_data_file:file read;
+allow crash_dump bluetooth_a2dp_offload_prop:file getattr;
+allow crash_dump bluetooth_data_file:file { getattr open };
+allow crash_dump bluetooth_prop:file { getattr open };
+allow crash_dump device_config_runtime_native_boot_prop:file getattr;
+allow crash_dump device_config_runtime_native_prop:file getattr;
+allow crash_dump resourcecache_data_file:file open;
+
 

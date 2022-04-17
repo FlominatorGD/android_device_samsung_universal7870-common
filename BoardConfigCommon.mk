@@ -215,8 +215,8 @@ TARGET_USES_VND_SECRIL := true
 # Security Patch Level
 VENDOR_SECURITY_PATCH := 2021-10-01
 
-# Release tools
-#TARGET_RELEASETOOLS_EXTENSIONS := $(COMMON_PATH)
+# Releasetools
+TARGET_RELEASETOOLS_EXTENSIONS := $(LOCAL_PATH)/releasetools
 
 # Recovery
 #RECOVERY_VARIANT := twrp
@@ -251,14 +251,11 @@ BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy
 SELINUX_IGNORE_NEVERALLOWS := true
 
 # Shims
-TARGET_LD_SHIM_LIBS := \
-    /vendor/lib/libbauthserver.so|libbauthtzcommon_shim.so \
-    /vendor/lib64/libbauthserver.so|libbauthtzcommon_shim.so \
-    /system/lib/libcamera_client.so|libcamera_client_shim.so \
-    /system/lib64/libcamera_client.so|libcamera_client_shim.so \
+TARGET_LD_SHIM_LIBS += \
     /system/lib/libexynoscamera.so|libexynoscamera_shim.so \
     /system/lib64/libexynoscamera.so|libexynoscamera_shim.so \
-		/vendor/bin/hw/gpsd|libshim_gpsd.so
+		/vendor/lib/libbauthserver.so|libbauthtzcommon_shim.so \
+    /vendor/lib64/libbauthserver.so|libbauthtzcommon_shim.so
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += $(COMMON_PATH)

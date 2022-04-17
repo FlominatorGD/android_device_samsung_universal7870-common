@@ -18,6 +18,17 @@ LOCAL_PATH := device/samsung/universal7870-common
 
 DEVICE_PACKAGE_OVERLAYS += $(LOCAL_PATH)/overlay
 
+# Boot animation
+TARGET_SCREEN_WIDTH := 720
+TARGET_SCREEN_HEIGHT := 1280
+TARGET_SCREEN_DENSITY := 360
+TARGET_BOOTANIMATION_PRELOAD := true
+TARGET_BOOTANIMATION_TEXTURE_CACHE := true
+
+# Libinit
+PRODUCT_PACKAGES += \
+    libinit_a3y17lte
+
 # Flat device tree for boot image
 PRODUCT_HOST_PACKAGES += \
     dtbhtoolExynos
@@ -135,11 +146,12 @@ PRODUCT_PACKAGES += \
 
 # Camera
 PRODUCT_PACKAGES += \
+PRODUCT_PACKAGES += \
 		android.hardware.camera.provider@2.4-impl \
-    android.hardware.camera.provider@2.4-service \
-    camera.universal7870 \
+		android.hardware.camera.provider@2.4-service \
+		camera.universal7870 \
 		libexynoscamera_shim \
-		libcamera_client_shim
+		Snap
 
 # DRM
 PRODUCT_PACKAGES += \
@@ -178,6 +190,8 @@ PRODUCT_PACKAGES += \
 
 # Versioned netutils
 PRODUCT_PACKAGES += \
+    android.system.net.netd@1.0 \
+    libandroid_net \
     netutils-wrapper-1.0
 
 # WCNSS
@@ -205,8 +219,8 @@ PRODUCT_PACKAGES += \
 
 # Bluetooth
 PRODUCT_PACKAGES += \
-    android.hardware.bluetooth@1.0 \
-    android.hardware.bluetooth.a2dp@1.0
+    android.hardware.bluetooth@1.0-impl \
+    android.hardware.bluetooth@1.0-service
 
 # NFC
 PRODUCT_COPY_FILES += \
@@ -222,36 +236,34 @@ PRODUCT_PACKAGES += \
     NfcNci \
     Tag
 
-# Audio configuration
+#
+# Audio
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/audio/audio_policy.conf:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy.conf \
+    $(LOCAL_PATH)/configs/audio/mixer_gains.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_gains.xml \
+    $(LOCAL_PATH)/configs/audio/mixer_paths.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/configs/audio/mixer_paths_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_paths_0.xml \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
-    $(LOCAL_PATH)/configs/audio/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml \
-    frameworks/av/services/audiopolicy/config/a2dp_in_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration.xml \
-    frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
+    frameworks/av/services/audiopolicy/config/a2dp_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml
 
-# Audio
 PRODUCT_PACKAGES += \
-    android.hardware.audio@2.0-service \
-    android.hardware.audio@5.0-impl \
-    android.hardware.audio.effect@5.0-impl \
-		android.hardware.bluetooth.audio@2.0-impl \
-    android.hardware.soundtrigger@2.2-impl \
-		audio.bluetooth.default \
-		audio.primary.universal7870 \
-		tinymix \
+    android.hardware.audio.service \
+    android.hardware.audio@6.0-impl \
+    android.hardware.audio.effect@6.0-impl \
+    android.hardware.audio.common-util \
+    android.hardware.audio.common@2.0-util \
+    android.hardware.audio.common@2.0 \
+    android.hardware.audio.common@6.0-util \
+    android.hardware.audio.common@6.0 \
+    audio_amplifier.universal7880_32 \
+    audio.primary.universal7880_32 \
     audio.a2dp.default \
     audio.usb.default \
     audio.r_submix.default \
     libtinycompress
-
-#gps
-PRODUCT_PACKAGES += \
-		libshim_gpsd
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -260,11 +272,7 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs_google_video.xml  \
     $(LOCAL_PATH)/configs/media/media_codecs.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_codecs.xml \
     $(LOCAL_PATH)/configs/media/media_profiles_V1_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/media_profiles_V1_0.xml
-
-# media
-PRODUCT_PACKAGES += \
-    android.hardware.media.c2@1.0
-
+		
 # GPS
 PRODUCT_PACKAGES += \
     android.hardware.gnss@1.0-impl
@@ -295,7 +303,7 @@ PRODUCT_PACKAGES += \
 
 # Fingerprint
 PRODUCT_PACKAGES += \
-    android.hardware.biometrics.fingerprint@2.3-service.samsung \
+    android.hardware.biometrics.fingerprint@2.1-service.samsung \
     libbauthtzcommon_shim
 
 # FlipFlap
@@ -348,11 +356,17 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hidl.base@1.0 \
     android.hidl.manager@1.0 \
+		libhidltransport \
     libhidltransport.vendor \
-    libhwbinder.vendor
+    libhwbinder.vendor \
+		libhwbinder \
+
 
 # System.prop
 -include $(DEVICE_PATH)/system_prop.mk
+
+#clang-r383902b missing ld executable (needed to build kernel)
+$(shell cp -r device/samsung/universal7870-common/clang/ld prebuilts/clang/host/linux-x86/clang-r383902b/bin)
 
 # call Samsung LSI board support package
 $(call inherit-product, hardware/samsung_slsi/exynos5/exynos5.mk)
@@ -360,3 +374,4 @@ $(call inherit-product, hardware/samsung_slsi/exynos7870/exynos7870.mk)
 
 # call the proprietary setup
 $(call inherit-product, vendor/samsung/a3y17lte/a3y17lte-vendor.mk)
+$(call inherit-product, vendor/samsung/universal7870-common/universal7870-common-vendor.mk)
