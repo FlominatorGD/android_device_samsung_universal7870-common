@@ -169,7 +169,7 @@ PRODUCT_PACKAGES += \
 
 # Power
 PRODUCT_PACKAGES += \
-		android.hardware.power@1.0-service.exynos
+    android.hardware.power@1.0-service.exynos
 
 # Healthd
 PRODUCT_PACKAGES += \
@@ -228,8 +228,7 @@ PRODUCT_PACKAGES += \
 
 # Offmode charger
 PRODUCT_PACKAGES += \
-    charger_res_images \
-    lineage_charger_res_image
+    charger_res_images
 
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
@@ -296,8 +295,8 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/idc/qwerty2.idc:$(TARGET_COPY_OUT_VENDOR)/usr/idc/qwerty2.idc
 
 # Trust HAL
-PRODUCT_PACKAGES += \
-    vendor.lineage.trust@1.0-service
+# PRODUCT_PACKAGES += \
+#    vendor.lineage.trust@1.0-service
 
 # Shims
 PRODUCT_PACKAGES += \
