@@ -103,8 +103,8 @@ PRODUCT_PACKAGES += \
     android.hardware.cas@1.2-service
 
 # debug (prebuilt)
-PRODUCT_PACKAGES += \
-    matlog
+# PRODUCT_PACKAGES += \
+#    matlog
     
 # Gnss
 PRODUCT_PACKAGES += \
