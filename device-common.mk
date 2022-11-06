@@ -105,6 +105,10 @@ PRODUCT_PACKAGES += \
 # debug (prebuilt)
 PRODUCT_PACKAGES += \
     matlog
+    
+# Gnss
+PRODUCT_PACKAGES += \
+   android.hardware.gnss@2.0-impl
 
 # Display
 PRODUCT_PACKAGES += \
