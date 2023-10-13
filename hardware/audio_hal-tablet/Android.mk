@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ifeq ($(BOARD_USES_EXYNOS7870_TFA_AMP),true)
+ifeq ($(TARGET_AUDIOHAL_VARIANT), gtaxl-common)
 
 LOCAL_PATH := $(call my-dir)
 
@@ -20,34 +20,49 @@ include $(CLEAR_VARS)
 
 LOCAL_ARM_MODE := arm
 
+LOCAL_SRC_FILES := \
+	audio_hw.c \
+	compress_offload.c \
+	ril_interface.c \
+	voice.c
+
+# TODO: remove resampler if possible when AudioFlinger supports downsampling from 48 to 8
 LOCAL_SHARED_LIBRARIES := \
 	liblog \
-	libutils \
 	libcutils \
-        libhardware \
-	libtinyalsa
+	libaudioutils \
+	libhardware \
+	libprocessgroup \
+	libtinyalsa \
+	libtinycompress \
+	libaudioroute \
+	libdl \
+	libsecril-client
 
-LOCAL_C_INCLUDES := \
-    $(LOCAL_PATH)/include \
+
+LOCAL_C_INCLUDES += \
+	$(LOCAL_PATH)/include \
 	external/tinyalsa/include \
 	external/tinycompress/include \
 	hardware/libhardware/include \
-	hardware/samsung/audio \
+	hardware/ril/include \
+	hardware/samsung/ril/libsecril-client \
 	$(call include-path-for, audio-utils) \
 	$(call include-path-for, audio-route) \
 	$(call include-path-for, audio-effects)
 
-LOCAL_SRC_FILES := \
-	amplifier.c \
-	tfa.c
-
 LOCAL_CFLAGS := -Werror -Wall
 LOCAL_CFLAGS += -DPREPROCESSING_ENABLED
 
-LOCAL_MODULE := audio_amplifier.$(TARGET_BOOTLOADER_BOARD_NAME)
-LOCAL_VENDOR_MODULE := true
+LOCAL_MODULE := audio.primary.$(TARGET_BOOTLOADER_BOARD_NAME)
+
 LOCAL_MODULE_RELATIVE_PATH := hw
+
 LOCAL_MODULE_TAGS := optional
+
+ifeq ($(BOARD_USES_VENDORIMAGE), true)
+    LOCAL_PROPRIETARY_MODULE := true
+endif
 
 include $(BUILD_SHARED_LIBRARY)
 

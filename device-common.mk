@@ -15,15 +15,13 @@
 #
 
 LOCAL_PATH := device/samsung/universal7870-common
-
 TARGET_TABLET_LIST := gtaxlwifi gtaxllte gtanotexlwifi gtanotexllte
-TARGET_TABLET_NO_RIL_LIST := gtanotexlwifi gtaxlwifi
 
 # Product Characteristics
 ifeq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_LIST)),)
-    PRODUCT_CHARACTERISTICS := phone
+PRODUCT_CHARACTERISTICS := tablet
 else
-    PRODUCT_CHARACTERISTICS := tablet
+PRODUCT_CHARACTERISTICS := phone
 endif
 
 # Boot animation
@@ -301,20 +299,6 @@ PRODUCT_PACKAGES += \
 DEVICE_PACKAGE_OVERLAYS += \
     $(LOCAL_PATH)/overlay
 
-ifeq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_NO_RIL_LIST)),)
-# Radio
-PRODUCT_PACKAGES += \
-    android.hardware.radio@1.2.vendor \
-    android.hardware.radio@1.3.vendor \
-    android.hardware.radio@1.4.vendor \
-    android.hardware.radio@1.5.vendor \
-    android.hardware.radio.config@1.0.vendor \
-    android.hardware.radio.config@1.1.vendor \
-    android.hardware.radio.config@1.2.vendor \
-    android.hardware.radio.deprecated@1.0.vendor \
-    secril_config_svc
-endif
-
 PRODUCT_PACKAGES += \
     libprotobuf-cpp-full-vendorcompat \
     libprotobuf-cpp-lite-vendorcompat \
@@ -325,26 +309,13 @@ PRODUCT_PACKAGES += \
     e2fsck_static \
     resize2fs_static
 
-# Radio (broadcastradio)
-PRODUCT_PACKAGES += \
-    android.hardware.broadcastradio@1.0-impl \
-    android.hardware.broadcastradio@1.0 \
-    android.hardware.broadcastradio@1.1
-
 # Ramdisk
 PRODUCT_PACKAGES += \
     fstab.samsungexynos7870 \
-    init.baseband.rc \
     init.samsungexynos7870.rc \
     init.samsungexynos7870.usb.rc \
     init.wifi.rc \
     ueventd.samsungexynos7870.rc
-
-ifeq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_NO_RIL_LIST)),)
-    PRODUCT_PACKAGES += \
-        init.vendor.rilchip.rc \
-        init.vendor.rilcommon.rc
-endif
 
 # Recorder
 PRODUCT_PACKAGES += \
@@ -386,23 +357,13 @@ PRODUCT_PACKAGES += \
     libcutils_shim \
     libexynoscamera_shim
 
-# USB
-PRODUCT_PACKAGES += \
-    android.hardware.usb@1.3-service.samsung \
-    com.android.future.usb.accessory
-
-# Vibrator
-PRODUCT_PACKAGES += \
-    android.hardware.vibrator@1.0-impl \
-    android.hardware.vibrator@1.0-service
+# Public libraries
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/public/public.libraries.txt:$(TARGET_COPY_OUT_VENDOR)/etc/public.libraries.txt
 
 # Vendor security patch level
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.build.vendor_security_patch=2019-11-01
-
-# GNSS
-PRODUCT_PACKAGES += \
-    android.hardware.gnss@2.0.vendor
 
 # VNDK
 PRODUCT_PACKAGES += \
@@ -416,14 +377,17 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libnl
 
-# Properties
+# Common Properties
 -include $(LOCAL_PATH)/vendor_prop.mk
+
+# Common phone
+$(call inherit-product, $(LOCAL_PATH)/device-common_phone.mk)
+
+# Common tablet
+$(call inherit-product, $(LOCAL_PATH)/device-common_tablet.mk)
 
 # setup dalvik vm configs.
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
 
 #clang-r383902b missing ld executable (needed to build kernel)
 $(shell cp -r device/samsung/universal7870-common/configs/clang/ld prebuilts/clang/host/linux-x86/clang-r416183b1/bin)
-
-# call the proprietary setup
-$(call inherit-product, vendor/samsung/universal7870-common/universal7870-common-vendor.mk)
