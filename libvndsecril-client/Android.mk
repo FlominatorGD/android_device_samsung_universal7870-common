@@ -1,7 +1,5 @@
 # Copyright 2006 The Android Open Source Project
 
-ifeq ($(PRODUCT_CHARACTERISTICS),phone)
-
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -33,5 +31,3 @@ LOCAL_PRELINK_MODULE := false
 LOCAL_PROPRIETARY_MODULE := true
 
 include $(BUILD_SHARED_LIBRARY)
-
-endif

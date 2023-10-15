@@ -15,10 +15,8 @@
 #
 
 LOCAL_PATH := device/samsung/universal7870-common
-TARGET_TABLET_LIST := gtaxlwifi gtaxllte gtanotexlwifi gtanotexllte
 
-# exclude tablets
-ifneq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_LIST)),)
+PRODUCT_CHARACTERISTICS := phone
 
 PRODUCT_PACKAGES += \
     android.hardware.radio@1.2.vendor \
@@ -50,8 +48,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.usb@1.3-service.samsung \
     com.android.future.usb.accessory
+
+# Common
+$(call inherit-product, $(LOCAL_PATH)/device-common.mk)
     
 # call the proprietary setup
 $(call inherit-product, vendor/samsung/universal7870-common/universal7870-common-vendor.mk)
-
-endif

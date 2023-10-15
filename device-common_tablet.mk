@@ -15,11 +15,8 @@
 #
 
 LOCAL_PATH := device/samsung/universal7870-common
-TARGET_TABLET_NO_RIL_LIST := gtanotexlwifi gtaxlwifi
-TARGET_TABLET_LIST := gtaxlwifi gtaxllte gtanotexlwifi gtanotexllte
 
-# include tablets
-ifeq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_LIST)),)
+PRODUCT_CHARACTERISTICS := tablet
 
 # GPS
 PRODUCT_PACKAGES += \
@@ -38,7 +35,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio-tablet/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
     $(LOCAL_PATH)/configs/audio-tablet/audio_effects.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects.xml
     
-ifneq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_NO_RIL_LIST)),)
+ifneq ($(filter gtaxlwifi gtanotexlwifi, $(TARGET_DEVICE)),)
 # Radio
 PRODUCT_PACKAGES += \
     android.hardware.radio@1.2.vendor \
@@ -70,7 +67,8 @@ PRODUCT_PACKAGES += \
 # Properties
 -include $(LOCAL_PATH)/vendor_tablet_prop.mk
 
+# Common
+$(call inherit-product, $(LOCAL_PATH)/device-common.mk)
+
 # Call the proprietary setup
 $(call inherit-product, vendor/samsung/gtaxl-common/gtaxl-common-vendor.mk)
-    
-endif

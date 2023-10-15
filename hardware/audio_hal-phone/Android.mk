@@ -45,7 +45,7 @@ LOCAL_C_INCLUDES += \
 	external/tinyalsa/include \
 	external/tinycompress/include \
 	hardware/libhardware/include \
-	$(LOCAL_PATH)/../libvndsecril-client \
+	$(LOCAL_PATH)/../../libvndsecril-client \
 	$(call include-path-for, audio-utils) \
 	$(call include-path-for, audio-route) \
 	$(call include-path-for, audio-effects)

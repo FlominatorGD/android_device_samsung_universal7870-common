@@ -15,14 +15,6 @@
 #
 
 LOCAL_PATH := device/samsung/universal7870-common
-TARGET_TABLET_LIST := gtaxlwifi gtaxllte gtanotexlwifi gtanotexllte
-
-# Product Characteristics
-ifeq ($(filter $(TARGET_DEVICE),$(TARGET_TABLET_LIST)),)
-PRODUCT_CHARACTERISTICS := tablet
-else
-PRODUCT_CHARACTERISTICS := phone
-endif
 
 # Boot animation
 TARGET_BOOTANIMATION_PRELOAD := true
@@ -379,12 +371,6 @@ PRODUCT_PACKAGES += \
 
 # Common Properties
 -include $(LOCAL_PATH)/vendor_prop.mk
-
-# Common phone
-$(call inherit-product, $(LOCAL_PATH)/device-common_phone.mk)
-
-# Common tablet
-$(call inherit-product, $(LOCAL_PATH)/device-common_tablet.mk)
 
 # setup dalvik vm configs.
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
